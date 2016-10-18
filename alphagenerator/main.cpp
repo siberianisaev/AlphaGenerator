@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include <random>
 #include <math.h>
 
@@ -52,22 +53,41 @@ Angles random_angles() {
 }
 
 int main(int argc, const char * argv[]) {
-    const int n = 10000;  // число событий
+    int n = 10000;  // число событий
+    std::cout << "Events Count: ";
+    std::cin >> n;
+    
     double radius = 30.0; // радиус источника (мм)
+    std::cout << "Source Radius: ";
+    std::cin >> radius;
+    
     double mean = 8700.0; // энергия пика (кэВ)
+    std::cout << "Alpha Energy: ";
+    std::cin >> mean;
+    
     double stddev = 100.0; // стандартное отклонение для энергии
+    std::cout << "Standard Deviation: ";
+    std::cin >> stddev;
     
     // Нормальное распределение в C++11 http://www.cplusplus.com/reference/random/normal_distribution/
     // Альтернатива из Boost библиотеки http://www.boost.org/doc/libs/1_42_0/libs/math/doc/sf_and_dist/html/math_toolkit/dist/dist_ref/dists/normal_dist.html
     std::default_random_engine generator;
     std::normal_distribution<double> distribution(mean, stddev);
     
+    std::ofstream out("result.dat",ios::out);
+    
     for (int i = 0; i < n; ++i) {
         Point point = random_point(radius);
         Angles angles = random_angles();
         double number = distribution(generator);
-        std::cout << point.x << "\t" << point.y << "\t" << angles.theta << "\t" << angles.phi << "\t" << number << std::endl;
+        
+        std::cout << point.x << "  " << point.y << "  " << angles.theta << "  " << angles.phi << "  " << number << std::endl;
+        if (out.good()) {
+            out << point.x << "  " << point.y << "  " << angles.theta << "  " << angles.phi << "  " << number << std::endl;
+        }
     }
+    
+    out.close();
     
     return 0;
 }
