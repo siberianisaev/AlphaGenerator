@@ -53,21 +53,37 @@ Angles random_angles() {
 }
 
 int main(int argc, const char * argv[]) {
-    int n = 10000;  // число событий
+    // число событий
+    int n = 10000;
     std::cout << "Events Count: ";
     std::cin >> n;
     
-    double radius = 30.0; // радиус источника (мм)
+    // радиус источника (мм)
+    double radius = 30.0;
     std::cout << "Source Radius: ";
     std::cin >> radius;
     
-    double mean = 8700.0; // энергия пика (кэВ)
+    // энергия пика (кэВ)
+    double mean = 8700.0;
     std::cout << "Alpha Energy: ";
     std::cin >> mean;
     
-    double stddev = 100.0; // стандартное отклонение для энергии
+    // стандартное отклонение для энергии
+    double stddev = 100.0;
     std::cout << "Standard Deviation: ";
     std::cin >> stddev;
+    
+    // заряд
+    int charge_min = 1;
+    std::cout << "Сharge Min: ";
+    std::cin >> charge_min;
+    int charge_max = 20;
+    std::cout << "Сharge Max: ";
+    std::cin >> charge_max;
+    int c1 = min(charge_min, charge_max);
+    int c2 = max(charge_min, charge_max);
+    charge_min = c1;
+    charge_max = c2;
     
     // Нормальное распределение в C++11 http://www.cplusplus.com/reference/random/normal_distribution/
     // Альтернатива из Boost библиотеки http://www.boost.org/doc/libs/1_42_0/libs/math/doc/sf_and_dist/html/math_toolkit/dist/dist_ref/dists/normal_dist.html
@@ -75,15 +91,17 @@ int main(int argc, const char * argv[]) {
     std::normal_distribution<double> distribution(mean, stddev);
     
     std::ofstream out("result.dat",ios::out);
+    std::cout << "point.x  point.y  angles.theta  angles.phi  energy  charge" << std::endl;
     
     for (int i = 0; i < n; ++i) {
         Point point = random_point(radius);
         Angles angles = random_angles();
-        double number = distribution(generator);
+        double energy = distribution(generator);
+        int charge = rand() % (charge_max - charge_min + 1) + charge_min;
         
-        std::cout << point.x << "  " << point.y << "  " << angles.theta << "  " << angles.phi << "  " << number << std::endl;
+        std::cout << point.x << "  " << point.y << "  " << angles.theta << "  " << angles.phi << "  " << energy << "  " << charge << std::endl;
         if (out.good()) {
-            out << point.x << "  " << point.y << "  " << angles.theta << "  " << angles.phi << "  " << number << std::endl;
+            out << point.x << "  " << point.y << "  " << angles.theta << "  " << angles.phi << "  " << energy << "  " << charge << std::endl;
         }
     }
     
